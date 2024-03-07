@@ -14,7 +14,7 @@ result = cursor.fetchall()
 
 # loop through the rows
 for row in result:
-    print(row)
+    print("\n", row)
     print("\n")
 
 # close the cursor and connection
