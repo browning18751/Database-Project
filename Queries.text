@@ -1,0 +1,21 @@
+## TeacherClass Query ##
+SELECT 
+    s.StaffName,
+    c.ClassName,
+    ch.ChildName,
+    ch.DateOfBirth,
+    ch.Gender,
+    (SELECT COUNT(*) FROM staff s2 WHERE s2.ClassID = s.ClassID AND s2.StaffID != s.StaffID) AS OtherTeachers
+FROM 
+    staff s
+INNER JOIN 
+    classrequirements c ON s.ClassID = c.ClassID
+LEFT JOIN 
+    children ch ON s.ClassID = ch.ClassID
+ORDER BY 
+    s.StaffName, ch.ChildName;
+
+## ParentsInfo Query ##
+SELECT
+
+FROM
