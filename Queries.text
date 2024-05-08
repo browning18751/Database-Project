@@ -16,9 +16,15 @@ ORDER BY
     s.StaffName, ch.ChildName;
 
 ## ParentsInfo Query ##
-SELECT
-
-FROM
+SELECT 
+    p.ParentID,
+    p.ParentName,
+    p.ContactInfo,
+    c.ChildName AS ChildName
+FROM 
+    parents p
+JOIN 
+    children c ON p.ChildID = c.ChildID;
 
 ## Pickup Query ##
 SELECT *
@@ -26,3 +32,22 @@ SELECT *
 FROM pickup
 
 WHERE Qualified = 'Yes' (or 'No')
+
+## 2nd Pickup Query ##
+SELECT p.*, c.ChildName
+
+FROM pickup p
+
+JOIN children c ON p.ChildID = c.ChildID
+
+WHERE p.Qualified = 'Yes';
+
+## Children Age ##
+SELECT 
+    ChildID,
+    ChildName,
+    DateOfBirth,
+    Gender,
+    FLOOR(DATEDIFF(CURRENT_DATE(), DateOfBirth) / 365.25) AS Age
+FROM 
+    children;
