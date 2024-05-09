@@ -1,3 +1,9 @@
+## Insert Child on Registration List ##
+
+INSERT INTO registration (RegistrationID, ChildID, SessionClassID, Gender)
+VALUES (RegistrationID_value, ChildID_value, SessionClassID_value, Gender_value);
+
+
 ## TeacherClass Query ##
 SELECT 
     s.StaffName,
