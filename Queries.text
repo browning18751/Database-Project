@@ -1,3 +1,14 @@
+## Training Hour Checker##
+SELECT 
+    TrainingID,
+    SUM(traininghours) AS TotalTrainingHours
+FROM 
+    traininghours
+GROUP BY 
+    TrainingID;
+
+
+
 ## Imunization Verification ##
 
 SELECT 
