@@ -1,7 +1,7 @@
-CREATE DATABASE  IF NOT EXISTS `school_workbench` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
-USE `school_workbench`;
 -- MySQL dump 10.13  Distrib 8.0.36, for Win64 (x86_64)
 --
+CREATE DATABASE  IF NOT EXISTS `school_workbench`; /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+USE `school_workbench`;
 -- Host: localhost    Database: school_workbench
 -- ------------------------------------------------------
 -- Server version	8.0.36
@@ -30,8 +30,10 @@ CREATE TABLE `children` (
   `DateOfBirth` date NOT NULL,
   `Gender` enum('Male','Female') NOT NULL,
   `ClassID` int NOT NULL,
+  `Bluecard` enum('Yes','No') NOT NULL,
   PRIMARY KEY (`ChildID`),
-  KEY `children_ibfk_1_idx` (`ClassID`)
+  KEY `children_ibfk_1_idx` (`ClassID`),
+  CONSTRAINT `Children_ClassID` FOREIGN KEY (`ClassID`) REFERENCES `sessionclasses` (`SessionClassID`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -41,7 +43,7 @@ CREATE TABLE `children` (
 
 LOCK TABLES `children` WRITE;
 /*!40000 ALTER TABLE `children` DISABLE KEYS */;
-INSERT INTO `children` VALUES (1,'Emma Smith','2018-03-12','Female',1),(2,'Liam Johnson','2017-08-25','Male',3),(3,'Olivia Williams','2019-01-05','Female',2),(4,'Noah Brown','2018-06-20','Male',3),(5,'Sophia Davis','2017-11-15','Female',1);
+INSERT INTO `children` VALUES (1,'Emma Smith','2018-03-12','Female',1,'Yes'),(2,'Liam Johnson','2017-08-25','Male',3,'No'),(3,'Olivia Williams','2019-01-05','Female',2,'Yes'),(4,'Noah Brown','2018-06-20','Male',3,'Yes'),(5,'Sophia Davis','2017-11-15','Female',1,'No');
 /*!40000 ALTER TABLE `children` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -95,7 +97,7 @@ CREATE TABLE `classrooms` (
 
 LOCK TABLES `classrooms` WRITE;
 /*!40000 ALTER TABLE `classrooms` DISABLE KEYS */;
-INSERT INTO `classrooms` VALUES (1,'2-3 years',12),(2,'3-4 years',18),(3,'4-5 years',25);
+INSERT INTO `classrooms` VALUES (1,'2-3 years',6),(2,'3-4 years',11),(3,'4-5 years',15);
 /*!40000 ALTER TABLE `classrooms` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -109,12 +111,12 @@ DROP TABLE IF EXISTS `parents`;
 CREATE TABLE `parents` (
   `ParentID` int NOT NULL AUTO_INCREMENT,
   `ParentName` varchar(45) NOT NULL,
-  `ContactInfo` int NOT NULL,
+  `ContactInfo` varchar(45) NOT NULL,
   `ChildID` int NOT NULL,
   PRIMARY KEY (`ParentID`),
   KEY `parents_ibfk_1_idx` (`ChildID`),
   CONSTRAINT `parents_ibfk_1` FOREIGN KEY (`ChildID`) REFERENCES `children` (`ChildID`) ON DELETE RESTRICT ON UPDATE RESTRICT
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -123,7 +125,33 @@ CREATE TABLE `parents` (
 
 LOCK TABLES `parents` WRITE;
 /*!40000 ALTER TABLE `parents` DISABLE KEYS */;
+INSERT INTO `parents` VALUES (1,'John Doe','123-456-7890',1),(2,'Jane Smith','987-654-3210',2);
 /*!40000 ALTER TABLE `parents` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `payroll`
+--
+
+DROP TABLE IF EXISTS `payroll`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `payroll` (
+  `PayrollID` int NOT NULL AUTO_INCREMENT,
+  `yearsworked` int NOT NULL,
+  `salary` int NOT NULL,
+  PRIMARY KEY (`PayrollID`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `payroll`
+--
+
+LOCK TABLES `payroll` WRITE;
+/*!40000 ALTER TABLE `payroll` DISABLE KEYS */;
+INSERT INTO `payroll` VALUES (1,5,65000);
+/*!40000 ALTER TABLE `payroll` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -141,7 +169,7 @@ CREATE TABLE `pickup` (
   PRIMARY KEY (`PickupID`),
   KEY `pickup_ibfk_1_idx` (`ChildID`),
   CONSTRAINT `pickup_ibfk_1` FOREIGN KEY (`ChildID`) REFERENCES `children` (`ChildID`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -150,8 +178,33 @@ CREATE TABLE `pickup` (
 
 LOCK TABLES `pickup` WRITE;
 /*!40000 ALTER TABLE `pickup` DISABLE KEYS */;
-INSERT INTO `pickup` VALUES (1,'Yes','Jeff',4),(2,'No','Bob',2);
+INSERT INTO `pickup` VALUES (1,'Yes','Jeff',4),(2,'No','Bob',2),(3,'Yes','John Smith',1),(4,'No','Jane Doe',2);
 /*!40000 ALTER TABLE `pickup` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `qualification`
+--
+
+DROP TABLE IF EXISTS `qualification`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `qualification` (
+  `QualificationID` int NOT NULL AUTO_INCREMENT,
+  `hours` int NOT NULL,
+  `qualificationlevel` varchar(45) NOT NULL,
+  PRIMARY KEY (`QualificationID`)
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `qualification`
+--
+
+LOCK TABLES `qualification` WRITE;
+/*!40000 ALTER TABLE `qualification` DISABLE KEYS */;
+INSERT INTO `qualification` VALUES (1,10,'in-Traning'),(2,25,'Assistant Teacher'),(4,50,'Teacher');
+/*!40000 ALTER TABLE `qualification` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -279,9 +332,15 @@ CREATE TABLE `staff` (
   `StaffName` varchar(45) NOT NULL,
   `StartDate` date NOT NULL,
   `ClassID` int DEFAULT NULL,
+  `payrollID` int NOT NULL,
+  `TrainingID` int NOT NULL,
   PRIMARY KEY (`StaffID`),
   KEY `staff_ibfk_1_idx` (`ClassID`),
-  CONSTRAINT `staff_ibfk_1` FOREIGN KEY (`ClassID`) REFERENCES `classrequirements` (`ClassID`) ON DELETE RESTRICT ON UPDATE RESTRICT
+  KEY `staff_payroll_idx` (`payrollID`),
+  KEY `Staff_TrainningID_idx` (`TrainingID`),
+  CONSTRAINT `Staff_ClassID` FOREIGN KEY (`ClassID`) REFERENCES `sessionclasses` (`ClassID`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `Staff_PayrollID` FOREIGN KEY (`payrollID`) REFERENCES `payroll` (`PayrollID`) ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `Staff_TrainingID` FOREIGN KEY (`TrainingID`) REFERENCES `traninghours` (`TraningID`) ON DELETE RESTRICT ON UPDATE RESTRICT
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -291,7 +350,7 @@ CREATE TABLE `staff` (
 
 LOCK TABLES `staff` WRITE;
 /*!40000 ALTER TABLE `staff` DISABLE KEYS */;
-INSERT INTO `staff` VALUES (1,'Jeff Tech','2016-04-13',2);
+INSERT INTO `staff` VALUES (1,'Jeff Tech','2016-04-13',2,1,1);
 /*!40000 ALTER TABLE `staff` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -320,6 +379,30 @@ LOCK TABLES `test` WRITE;
 INSERT INTO `test` VALUES (31,'William','Poe',20),(65,'Cooper','Smith',19);
 /*!40000 ALTER TABLE `test` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Table structure for table `traninghours`
+--
+
+DROP TABLE IF EXISTS `traninghours`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `traninghours` (
+  `TraningID` int NOT NULL AUTO_INCREMENT,
+  `traninghours` int NOT NULL,
+  PRIMARY KEY (`TraningID`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `traninghours`
+--
+
+LOCK TABLES `traninghours` WRITE;
+/*!40000 ALTER TABLE `traninghours` DISABLE KEYS */;
+INSERT INTO `traninghours` VALUES (1,50);
+/*!40000 ALTER TABLE `traninghours` ENABLE KEYS */;
+UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -330,4 +413,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-05-02 10:01:36
+-- Dump completed on 2024-05-08 20:34:29
