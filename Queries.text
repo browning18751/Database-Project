@@ -1,3 +1,15 @@
+## Imunization Verification ##
+
+SELECT 
+    ChildID,
+    ChildName,
+    CASE 
+        WHEN Bluecard IS NOT NULL THEN 'Has Imunnizations'
+        ELSE 'Does not have Imunnizations'
+    END AS BluecardStatus
+FROM 
+    children;
+
 ## Insert Child on Registration List ##
 
 INSERT INTO registration (RegistrationID, ChildID, SessionClassID, Gender)
