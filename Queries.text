@@ -1,19 +1,7 @@
 ## TeacherClass Query ##
-SELECT 
-    s.StaffName,
-    c.ClassName,
-    ch.ChildName,
-    ch.DateOfBirth,
-    ch.Gender,
-    (SELECT COUNT(*) FROM staff s2 WHERE s2.ClassID = s.ClassID AND s2.StaffID != s.StaffID) AS OtherTeachers
-FROM 
-    staff s
-INNER JOIN 
-    classrequirements c ON s.ClassID = c.ClassID
-LEFT JOIN 
-    children ch ON s.ClassID = ch.ClassID
-ORDER BY 
-    s.StaffName, ch.ChildName;
+SELECT DISTINCT s.StaffName, cr.ClassName, cr.Days
+FROM staff s
+JOIN classrequirements cr ON s.ClassID = cr.ClassID;
 
 ## ParentsInfo Query ##
 SELECT 
@@ -47,7 +35,102 @@ SELECT
     ChildID,
     ChildName,
     DateOfBirth,
-    Gender,
-    FLOOR(DATEDIFF(CURRENT_DATE(), DateOfBirth) / 365.25) AS Age
+    TIMESTAMPDIFF(YEAR, DateOfBirth, CURDATE()) AS AgeYears	
 FROM 
     children;
+
+## Teacher Traning Hours ##
+SELECT s.StaffName, th.traninghours
+FROM staff s
+INNER JOIN traninghours th ON s.TrainingID = th.TraningID;
+
+## Childern Has Blue Card ##
+SELECT 
+    c.ChildID,
+    c.ChildName,
+    c.Bluecard
+FROM 
+    children c
+WHERE 
+    c.Bluecard = 'Yes';
+
+## Possible Class Assignments ##
+SELECT 
+    cr.ClassName,
+    SUM(CASE WHEN c.Gender = 'Male' THEN 1 ELSE 0 END) AS Male_Count,
+    SUM(CASE WHEN c.Gender = 'Female' THEN 1 ELSE 0 END) AS Female_Count,
+    st.StaffName AS Teacher_Assigned
+FROM 
+    classrequirements cr
+LEFT JOIN 
+    sessionclasses sc ON cr.ClassID = sc.ClassID
+LEFT JOIN 
+    sessions s ON sc.SessionID = s.SessionID
+LEFT JOIN 
+    registration r ON sc.SessionClassID = r.SessionClassID
+LEFT JOIN 
+    children c ON r.ChildID = c.ChildID
+LEFT JOIN 
+    staff st ON cr.ClassID = st.ClassID
+GROUP BY 
+    cr.ClassName, st.StaffName;
+
+## Testing ##
+SELECT 
+    cr.ClassName,
+    SUM(CASE WHEN c.Gender = 'Male' THEN 1 ELSE 0 END) AS Male_Count,
+    SUM(CASE WHEN c.Gender = 'Female' THEN 1 ELSE 0 END) AS Female_Count,
+    st.StaffName AS Teacher_Assigned
+FROM 
+    classrequirements cr
+LEFT JOIN 
+    sessionclasses sc ON cr.ClassID = sc.ClassID
+LEFT JOIN 
+    sessions s ON sc.SessionID = s.SessionID
+LEFT JOIN 
+    registration r ON sc.SessionClassID = r.SessionClassID
+LEFT JOIN 
+    children c ON r.ChildID = c.ChildID
+LEFT JOIN 
+    staff st ON cr.ClassID = st.ClassID
+GROUP BY 
+    cr.ClassName, st.StaffName;
+
+## Classes Query ##
+SET @total_boys := (SELECT COUNT(*) FROM children WHERE Gender = 'Male');
+SET @total_girls := (SELECT COUNT(*) FROM children WHERE Gender = 'Female');
+
+CREATE TEMPORARY TABLE IF NOT EXISTS temp_boys AS
+SELECT * FROM children WHERE Gender = 'Male';
+
+CREATE TEMPORARY TABLE IF NOT EXISTS temp_girls AS
+SELECT * FROM children WHERE Gender = 'Female';
+
+CREATE TEMPORARY TABLE IF NOT EXISTS temp_class AS
+SELECT ClassID, ClassName, Capacity - NumberOfTeachers AS available_seats FROM classrequirements;
+
+SELECT * FROM temp_class;
+
+WHILE (@total_boys > 0 AND @total_girls > 0) DO
+    INSERT INTO temp_class (ClassID, ClassName, available_seats)
+    SELECT ClassID, ClassName, available_seats - 1
+    FROM temp_class
+    WHERE available_seats > 0
+    LIMIT 1;
+    
+    DELETE FROM temp_boys WHERE ChildID = (SELECT ChildID FROM temp_class ORDER BY RAND() LIMIT 1);
+    DELETE FROM temp_girls WHERE ChildID = (SELECT ChildID FROM temp_class ORDER BY RAND() LIMIT 1);
+    
+    SET @total_boys := (SELECT COUNT(*) FROM temp_boys);
+    SET @total_girls := (SELECT COUNT(*) FROM temp_girls);
+END WHILE;
+
+INSERT INTO temp_class (ClassID, ClassName, available_seats)
+SELECT ClassID, ClassName, available_seats
+FROM temp_class
+WHERE available_seats > 0;
+
+SELECT * FROM temp_class;
+
+DROP TEMPORARY TABLE IF EXISTS temp_boys;
+DROP TEMPORARY TABLE IF EXISTS temp_girls;
