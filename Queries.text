@@ -1,3 +1,32 @@
+## Training Hour Checker##
+SELECT 
+    TrainingID,
+    SUM(traininghours) AS TotalTrainingHours
+FROM 
+    traininghours
+GROUP BY 
+    TrainingID;
+
+
+
+## Imunization Verification ##
+
+SELECT 
+    ChildID,
+    ChildName,
+    CASE 
+        WHEN Bluecard IS NOT NULL THEN 'Has Imunnizations'
+        ELSE 'Does not have Imunnizations'
+    END AS BluecardStatus
+FROM 
+    children;
+
+## Insert Child on Registration List ##
+
+INSERT INTO registration (RegistrationID, ChildID, SessionClassID, Gender)
+VALUES (RegistrationID_value, ChildID_value, SessionClassID_value, Gender_value);
+
+
 ## TeacherClass Query ##
 SELECT DISTINCT s.StaffName, cr.ClassName, cr.Days
 FROM staff s
@@ -134,3 +163,4 @@ SELECT * FROM temp_class;
 
 DROP TEMPORARY TABLE IF EXISTS temp_boys;
 DROP TEMPORARY TABLE IF EXISTS temp_girls;
+
