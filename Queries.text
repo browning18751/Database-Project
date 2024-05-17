@@ -1,63 +1,22 @@
 
+#Build classes??##
+-- Step 1: Identify available classes and their requirements
+SELECT cr.ClassID, cr.ClassName, cr.Capacity, cr.NumberOfTeachers
+FROM classrequirements cr
+WHERE cr.Days LIKE '%Monday%' AND cr.Days LIKE '%Tuesday%' AND cr.Days LIKE '%Wednesday%' AND cr.Days LIKE '%Thursday%' AND cr.Days LIKE '%Friday%';
 
+-- Step 2: Fetch children from the waiting list who meet the age requirements for each class
+SELECT c.ChildID, c.ChildName, c.Gender, cr.ClassID
+FROM children c
+JOIN classrequirements cr ON c.DateOfBirth >= DATE_SUB(NOW(), INTERVAL cr.MaxAge YEAR) 
+AND c.DateOfBirth <= DATE_SUB(NOW(), INTERVAL cr.MinAge YEAR);
 
-## Build classes for section##
+-- Step 3: Balance the number of girls and boys in each class (considering available capacity)
+-- You may need to perform calculations based on the number of children already assigned to each class.
 
--- Step 2.1: Create a temporary table to handle assignments
-CREATE TEMPORARY TABLE TempAssignments (
-    ChildID INT,
-    ClassID INT,
-    Gender CHAR(1),
-    Priority INT,
-    Assigned BOOLEAN DEFAULT FALSE
-);
-
--- Step 2.2: Insert children from the waiting list into TempAssignments
-INSERT INTO TempAssignments (ChildID, ClassID, Gender, Priority)
-SELECT w.ChildID, cr.ClassID, ch.Gender, w.Priority
-FROM WaitingList w
-JOIN Children ch ON w.ChildID = ch.ChildID
-JOIN ClassRequirements cr ON cr.GenderBalance = TRUE
-ORDER BY w.Priority ASC;
-
--- Step 2.3: Assign children to classes with gender balance
--- We will handle this by splitting the children into boys and girls, then interleaving them
-CREATE TEMPORARY TABLE Boys AS 
-SELECT ChildID, ClassID, Gender, Priority
-FROM TempAssignments
-WHERE Gender = 'M';
-
-CREATE TEMPORARY TABLE Girls AS 
-SELECT ChildID, ClassID, Gender, Priority
-FROM TempAssignments
-WHERE Gender = 'F';
-
-SET @b:=0;
-SET @g:=0;
-
-INSERT INTO ClassAssignments (ChildID, ClassID)
-SELECT ChildID, ClassID
-FROM (
-    SELECT ChildID, ClassID, @b := @b + 1 AS rank FROM Boys
-    UNION ALL
-    SELECT ChildID, ClassID, @g := @g + 1 AS rank FROM Girls
-) AS Combined
-ORDER BY ClassID, rank
-LIMIT (SELECT MaxCapacity FROM Classes WHERE ClassID = Combined.ClassID);
-
--- Step 2.4: Assign a few children to teachers
--- Assuming we want to assign half of the children to teachers randomly
-INSERT INTO ClassAssignments (ChildID, ClassID, TeacherID)
-SELECT ChildID, ClassID, 
-       (SELECT TeacherID FROM Teachers ORDER BY RAND() LIMIT 1)
-FROM ClassAssignments
-ORDER BY RAND()
-LIMIT (SELECT COUNT(*) / 2 FROM ClassAssignments);
-
--- Clean up temporary tables
-DROP TEMPORARY TABLE IF EXISTS TempAssignments;
-DROP TEMPORARY TABLE IF EXISTS Boys;
-DROP TEMPORARY TABLE IF EXISTS Girls;
+-- Step 4: Assign children to teachers
+-- You can assign children to teachers based on various criteria such as experience, workload, etc.
+-- Use INSERT INTO statements to assign children to teachers.
 
 ## Imunization Verification ##
 
