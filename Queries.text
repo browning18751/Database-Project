@@ -107,7 +107,8 @@ SELECT * FROM children
 ORDER BY DateOfBirth;
 
 -- Get class requirement for all classes.
-SELECT * FROM classrequirements;
+SELECT * FROM classrequirements
+WHERE ClassName = 'Young Toddlers';
 
 -- Put children into classes maintaining even number of boys and girls
 SELECT c.* 
