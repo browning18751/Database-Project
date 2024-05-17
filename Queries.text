@@ -4,18 +4,6 @@ FROM staff s
 JOIN traininghours th ON s.TrainingID = th.TrainingID;
 
 
-#### Imunization Verification ####
-SELECT 
-    ChildID,
-    ChildName,
-    CASE 
-        WHEN Bluecard IS NOT NULL THEN 'Has Imunnizations'
-        ELSE 'Does not have Imunnizations'
-    END AS BluecardStatus
-FROM 
-    children;
-
-
 #### Insert Child on Registration List ####
 
 INSERT INTO registration (RegistrationID, ChildID, Semester)
