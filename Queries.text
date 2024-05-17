@@ -3,8 +3,8 @@ SELECT s.StaffName, th.traininghours
 FROM staff s
 JOIN traininghours th ON s.TrainingID = th.TrainingID;
 
-#### Imunization Verification ####
 
+#### Imunization Verification ####
 SELECT 
     ChildID,
     ChildName,
@@ -14,6 +14,7 @@ SELECT
     END AS BluecardStatus
 FROM 
     children;
+
 
 #### Insert Child on Registration List ####
 
@@ -26,6 +27,7 @@ SELECT DISTINCT s.StaffName, cr.ClassName, cr.Days
 FROM staff s
 JOIN classrequirements cr ON s.ClassID = cr.ClassID;
 
+
 #### ParentsInfo Query ####
 SELECT 
     p.ParentID,
@@ -37,12 +39,14 @@ FROM
 JOIN 
     children c ON p.ChildID = c.ChildID;
 
+
 ## Pickup Query ##
 SELECT *
 
 FROM pickup
 
 WHERE Qualified = 'Yes' (or 'No')
+
 
 #### 2nd Pickup Query ####
 SELECT p.*, c.ChildName
@@ -52,6 +56,7 @@ FROM pickup p
 JOIN children c ON p.ChildID = c.ChildID
 
 WHERE p.Qualified = 'Yes';
+
 
 #### Children Age ####
 SELECT 
@@ -76,27 +81,6 @@ FROM
     children c
 WHERE 
     c.Bluecard = 'Yes';
-
-#### Testing ####
-SELECT 
-    cr.ClassName,
-    SUM(CASE WHEN c.Gender = 'Male' THEN 1 ELSE 0 END) AS Male_Count,
-    SUM(CASE WHEN c.Gender = 'Female' THEN 1 ELSE 0 END) AS Female_Count,
-    st.StaffName AS Teacher_Assigned
-FROM 
-    classrequirements cr
-LEFT JOIN 
-    sessionclasses sc ON cr.ClassID = sc.ClassID
-LEFT JOIN 
-    sessions s ON sc.SessionID = s.SessionID
-LEFT JOIN 
-    registration r ON sc.SessionClassID = r.SessionClassID
-LEFT JOIN 
-    children c ON r.ChildID = c.ChildID
-LEFT JOIN 
-    staff st ON cr.ClassID = st.ClassID
-GROUP BY 
-    cr.ClassName, st.StaffName;
 
 
 #### Class assignments query ####
