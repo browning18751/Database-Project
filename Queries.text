@@ -99,7 +99,7 @@ GROUP BY
     cr.ClassName, st.StaffName;
 
 
-#### THIS QUERY MIGHT BE GOOD ENOUGH FOR THE CLASS ONE ####
+#### Class assignments query ####
 START TRANSACTION;
 
 -- Sort children by age
