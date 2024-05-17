@@ -3,24 +3,6 @@ SELECT s.StaffName, th.traininghours
 FROM staff s
 JOIN traininghours th ON s.TrainingID = th.TrainingID;
 
-#Build classes??##
--- Step 1: Identify available classes and their requirements
-SELECT cr.ClassID, cr.ClassName, cr.Capacity, cr.NumberOfTeachers
-FROM classrequirements cr
-WHERE cr.Days LIKE '%Monday%' AND cr.Days LIKE '%Tuesday%' AND cr.Days LIKE '%Wednesday%' AND cr.Days LIKE '%Thursday%' AND cr.Days LIKE '%Friday%';
-
--- Step 2: Fetch children from the waiting list who meet the age requirements for each class
-SELECT c.ChildID, c.ChildName, c.Gender, cr.ClassID
-FROM children c
-JOIN classrequirements cr ON c.DateOfBirth >= DATE_SUB(NOW(), INTERVAL cr.MaxAge YEAR) 
-AND c.DateOfBirth <= DATE_SUB(NOW(), INTERVAL cr.MinAge YEAR);
-
--- Step 3: Balance the number of girls and boys in each class (considering available capacity)
--- You may need to perform calculations based on the number of children already assigned to each class.
-
--- Step 4: Assign children to teachers
--- You can assign children to teachers based on various criteria such as experience, workload, etc.
--- Use INSERT INTO statements to assign children to teachers.
 
 ## Imunization Verification ##
 
