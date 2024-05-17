@@ -164,3 +164,43 @@ SELECT * FROM temp_class;
 DROP TEMPORARY TABLE IF EXISTS temp_boys;
 DROP TEMPORARY TABLE IF EXISTS temp_girls;
 
+## THIS QUERY MIGHT BE GOOD ENOUGH FOR THE CLASS ONE ##
+START TRANSACTION;
+
+-- Sort children by age
+SELECT * FROM children
+ORDER BY DateOfBirth;
+
+-- Get class requirement for all classes.
+SELECT * FROM classrequirements;
+
+-- Put children into classes maintaining even number of boys and girls
+SELECT c.* 
+FROM children c
+JOIN (
+    -- Select an even number of boys
+    SELECT ChildID
+    FROM (
+        SELECT ChildID
+        FROM children
+        WHERE TIMESTAMPDIFF(YEAR, DateOfBirth, CURDATE()) BETWEEN 0.5 AND 1
+        AND Gender = 'Male'
+        ORDER BY DateOfBirth
+        LIMIT 3
+    ) boys
+
+    UNION ALL
+
+    -- Select an even number of girls
+    SELECT ChildID
+    FROM (
+        SELECT ChildID
+        FROM children
+        WHERE TIMESTAMPDIFF(YEAR, DateOfBirth, CURDATE()) BETWEEN 0.5 AND 1
+        AND Gender = 'Female'
+        ORDER BY DateOfBirth
+        LIMIT 3
+    ) girls
+) temp ON c.ChildID = temp.ChildID;
+
+COMMIT;
