@@ -216,4 +216,12 @@ JOIN (
     ) girls
 ) temp ON c.ChildID = temp.ChildID;
 
+-- Gets the teachers for a class
+SELECT s.*
+FROM staff s
+JOIN traininghours th ON s.TrainingID = th.TrainingID
+WHERE th.traininghours > 20
+LIMIT 2;
+
 COMMIT;
+
