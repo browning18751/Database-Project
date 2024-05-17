@@ -36,8 +36,8 @@ FROM
 
 ## Insert Child on Registration List ##
 
-INSERT INTO registration (RegistrationID, ChildID, SessionClassID, Gender)
-VALUES (RegistrationID_value, ChildID_value, SessionClassID_value, Gender_value);
+INSERT INTO registration (RegistrationID, ChildID, Semester)
+VALUES (RegistrationID_value, ChildID_value, Semester);
 
 
 ## TeacherClass Query ##
