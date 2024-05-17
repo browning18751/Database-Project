@@ -1,3 +1,7 @@
+##training hour lister##
+SELECT s.StaffName, th.traininghours
+FROM staff s
+JOIN traininghours th ON s.TrainingID = th.TrainingID;
 
 #Build classes??##
 -- Step 1: Identify available classes and their requirements
